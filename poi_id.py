@@ -17,7 +17,19 @@ with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
 
 ### Figure out the length of the my_dataset
-print(len(data_dict.keys()))
+#print(len(data_dict.keys())) --146
+
+
+### Find the count of POIs in the my_dataset
+poi_yes = 0
+poi_no = 0
+for x in range(0, len(data_dict)):
+    if data_dict[data_dict.keys()[x]]['poi'] == True:
+        poi_yes += 1
+    else:
+        poi_no += 1
+print poi_yes
+print poi_no
 
 
 ### Task 2: Remove outliers
