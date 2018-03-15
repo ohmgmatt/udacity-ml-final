@@ -2,7 +2,7 @@
 
 import sys
 import pickle
-sys.path.append("../tools/")
+sys.path.append("tools/")
 
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data
@@ -10,11 +10,15 @@ from tester import dump_classifier_and_data
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list = ['poi','salary'] # You will need to use more features
+features_list = ['poi','salary']
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
+
+### Figure out the length of the my_dataset
+print(len(data_dict.keys()))
+
 
 ### Task 2: Remove outliers
 ### Task 3: Create new feature(s)
@@ -34,7 +38,7 @@ labels, features = targetFeatureSplit(data)
 # Provided to give you a starting point. Try a variety of classifiers.
 from sklearn.naive_bayes import GaussianNB
 clf = GaussianNB()
-clf.fit()
+
 
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall
@@ -54,4 +58,4 @@ features_train, features_test, labels_train, labels_test = \
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
 
-dump_classifier_and_data(clf, my_dataset, features_list)
+#dump_classifier_and_data(clf, my_dataset, features_list)
