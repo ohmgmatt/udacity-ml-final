@@ -6,11 +6,12 @@ sys.path.append("tools/")
 
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data
+from collections import Counter
 
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list = ['poi','salary']
+features_list = ['poi','total_stock_value']
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -20,19 +21,10 @@ with open("final_project_dataset.pkl", "r") as data_file:
 #print(len(data_dict.keys())) --146
 
 
-### Find the count of POIs in the my_dataset
-poi_yes = 0
-poi_no = 0
-for x in range(0, len(data_dict)):
-    if data_dict[data_dict.keys()[x]]['poi'] == True:
-        poi_yes += 1
-    else:
-        poi_no += 1
-print poi_yes
-print poi_no
-
 
 ### Task 2: Remove outliers
+print data_dict
+
 ### Task 3: Create new feature(s)
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
