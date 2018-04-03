@@ -75,7 +75,7 @@ features_train, features_test, labels_train, labels_test = \
 
 from sklearn.tree import DecisionTreeClassifier
 
-clf = DecisionTreeClassifier()
+clf = DecisionTreeClassifier(min_samples_split = 4)
 
 t0 = time()
 clf.fit(features_train, labels_train)
