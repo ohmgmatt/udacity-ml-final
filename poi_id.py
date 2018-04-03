@@ -5,6 +5,10 @@ import pickle
 sys.path.append("tools/")
 
 from feature_format import featureFormat, targetFeatureSplit
+from sklearn.model_selection import GridSearchCV
+from sklearn.cross_validation import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
 from tester import dump_classifier_and_data
 from collections import Counter
 from time import time
@@ -68,12 +72,12 @@ labels, features = targetFeatureSplit(data)
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 # Example starting point. Try investigating other evaluation techniques!
-from sklearn.cross_validation import train_test_split
+
 features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
 
 
-from sklearn.tree import DecisionTreeClassifier
+
 
 clf = DecisionTreeClassifier(min_samples_split = 4)
 
@@ -85,7 +89,7 @@ t0 = time()
 pred = clf.predict(features_test)
 print "predict time:", round(time()-t0, 3), "s"
 
-from sklearn.metrics import accuracy_score
+
 acc = accuracy_score(pred, labels_test)
 
 print(acc)
