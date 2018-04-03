@@ -12,7 +12,8 @@ from time import time
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list = ['poi','total_stock_value']
+features_list = ['poi','total_stock_value', 'from_poi_to_this_person',
+'from_this_person_to_poi']
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -33,8 +34,12 @@ data_dict.pop('TOTAL')
 ## to have 0 in total_stock_value
 for x in range(0, len(data_dict.keys())):
     if data_dict[data_dict.keys()[x]]['total_stock_value'] == 'NaN' or \
-    data_dict[data_dict.keys()[x]]['total_stock_value'] <= 0:
+    data_dict[data_dict.keys()[x]]['total_stock_value'] < 0:
         data_dict[data_dict.keys()[x]]['total_stock_value'] = 0
+    if data_dict[data_dict.keys()[x]]['from_poi_to_this_person'] == 'NaN':
+        data_dict[data_dict.keys()[x]]['from_poi_to_this_person'] = 0
+    if data_dict[data_dict.keys()[x]]['from_this_person_to_poi'] == 'NaN':
+        data_dict[data_dict.keys()[x]]['from_this_person_to_poi'] = 0
 
 
 
