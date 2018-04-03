@@ -77,9 +77,10 @@ features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
 
 
+parameter = {'min_samples_split':range(2,11)}
+decisiontree = DecisionTreeClassifier()
 
-
-clf = DecisionTreeClassifier(min_samples_split = 4)
+clf = GridSearchCV(decisiontree, parameter, cv = 6)
 
 t0 = time()
 clf.fit(features_train, labels_train)
@@ -89,11 +90,8 @@ t0 = time()
 pred = clf.predict(features_test)
 print "predict time:", round(time()-t0, 3), "s"
 
-
-acc = accuracy_score(pred, labels_test)
-
-print(acc)
-
+print clf.best_score_
+print clf.best_params_
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
