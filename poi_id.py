@@ -3,12 +3,15 @@
 import sys
 import pickle
 sys.path.append("tools/")
+import numpy as np
 
 from feature_format import featureFormat, targetFeatureSplit
 from sklearn.model_selection import GridSearchCV
 from sklearn.cross_validation import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
+from sklearn import svm
+
 from tester import dump_classifier_and_data
 from collections import Counter
 from time import time
@@ -16,8 +19,8 @@ from time import time
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list = ['poi','total_stock_value', 'from_poi_to_this_person',
-'from_this_person_to_poi']
+features_list = ['poi','total_stock_value', 'person_to_poi_ratio',
+'poi_to_person_ratio']
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -40,14 +43,26 @@ for x in range(0, len(data_dict.keys())):
     if data_dict[data_dict.keys()[x]]['total_stock_value'] == 'NaN' or \
     data_dict[data_dict.keys()[x]]['total_stock_value'] < 0:
         data_dict[data_dict.keys()[x]]['total_stock_value'] = 0
-    if data_dict[data_dict.keys()[x]]['from_poi_to_this_person'] == 'NaN':
+    if data_dict[data_dict.keys()[x]]['to_messages'] == 'NaN':
+        data_dict[data_dict.keys()[x]]['to_messages'] = 0
+        data_dict[data_dict.keys()[x]]['from_messages'] = 0
         data_dict[data_dict.keys()[x]]['from_poi_to_this_person'] = 0
-    if data_dict[data_dict.keys()[x]]['from_this_person_to_poi'] == 'NaN':
         data_dict[data_dict.keys()[x]]['from_this_person_to_poi'] = 0
 
 
 
 ### Task 3: Create new feature(s)
+###https://stackoverflow.com/questions/1024847/add-new-keys-to-a-dictionary
+for i in data_dict:
+    if data_dict[i]['to_messages'] == 0:
+        data_dict[i].update({'person_to_poi_ratio': 0})
+        data_dict[i].update({'poi_to_person_ratio': 0})
+    else:
+        sent_ratio = float(data_dict[i]['from_this_person_to_poi'])/float(data_dict[i]['from_messages'])
+        received_ratio = float(data_dict[i]['from_poi_to_this_person'])/float(data_dict[i]['to_messages'])
+        data_dict[i].update({'person_to_poi_ratio': sent_ratio})
+        data_dict[i].update({'poi_to_person_ratio': received_ratio})
+
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
 
@@ -80,18 +95,38 @@ features_train, features_test, labels_train, labels_test = \
 parameter = {'min_samples_split':range(2,11)}
 decisiontree = DecisionTreeClassifier()
 
-clf = GridSearchCV(decisiontree, parameter, cv = 6)
+#clf = GridSearchCV(decisiontree, parameter, cv = 2)
+#t0 = time()
+#clf.fit(features_train, labels_train)
+#print "training time:", round(time()-t0, 3), "s"
+#t0 = time()
+#pred = clf.predict(features_test)
+#print "predict time:", round(time()-t0, 3), "s"
+#print clf.best_score_
+#print clf.best_params_
+
+C_Range = np.logspace(-3, 10, 10)
+Gamma_Range = np.logspace(-3, 10, 10)
+parameters = {'C':C_Range, 'gamma':Gamma_Range}
+svector = svm.SVC(kernel = 'rbf')
+
+clf = GridSearchCV(svector, parameters)
 
 t0 = time()
 clf.fit(features_train, labels_train)
 print "training time:", round(time()-t0, 3), "s"
 
+
 t0 = time()
 pred = clf.predict(features_test)
 print "predict time:", round(time()-t0, 3), "s"
 
+print(accuracy_score(labels_test, pred))
 print clf.best_score_
 print clf.best_params_
+
+
+
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
