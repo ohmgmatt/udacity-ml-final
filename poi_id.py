@@ -9,7 +9,7 @@ from feature_format import featureFormat, targetFeatureSplit
 from sklearn.model_selection import GridSearchCV
 from sklearn.cross_validation import train_test_split
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score
 from sklearn import svm
 
 from tester import dump_classifier_and_data
@@ -19,8 +19,15 @@ from time import time
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
+#['to_messages', 'deferral_payments', 'bonus', 'person_to_poi_ratio',
+#'total_stock_value', 'expenses', 'from_poi_to_this_person',
+#'from_this_person_to_poi', 'poi', 'deferred_income', 'restricted_stock',
+#'long_term_incentive', 'salary', 'poi_to_person_ratio', 'total_payments',
+#'loan_advances', 'email_address', 'restricted_stock_deferred',
+#'shared_receipt_with_poi', 'exercised_stock_options', 'from_messages',
+#'other', 'director_fees']
 features_list = ['poi','total_stock_value', 'person_to_poi_ratio',
-'poi_to_person_ratio']
+    'poi_to_person_ratio', 'shared_receipt_with_poi']
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -65,6 +72,7 @@ for i in data_dict:
 
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
+print(my_dataset[my_dataset.keys()[x]]).keys()
 
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
@@ -92,8 +100,8 @@ features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
 
 
-parameter = {'min_samples_split':range(2,11)}
-decisiontree = DecisionTreeClassifier()
+#parameter = {'min_samples_split':range(2,11)}
+#decisiontree = DecisionTreeClassifier()
 
 #clf = GridSearchCV(decisiontree, parameter, cv = 2)
 #t0 = time()
@@ -105,25 +113,36 @@ decisiontree = DecisionTreeClassifier()
 #print clf.best_score_
 #print clf.best_params_
 
-C_Range = np.logspace(-3, 10, 10)
-Gamma_Range = np.logspace(-3, 10, 10)
-parameters = {'C':C_Range, 'gamma':Gamma_Range}
-svector = svm.SVC(kernel = 'rbf')
+#C_Range = np.logspace(-3, 10, 10)
+#Gamma_Range = np.logspace(-3, 10, 10)
+#parameters = {'C':C_Range, 'gamma':Gamma_Range}
+#svector = svm.SVC(kernel = 'rbf')
 
-clf = GridSearchCV(svector, parameters)
+#clf = GridSearchCV(svector, parameters)
+clf = svm.SVC(kernel = 'rbf', C = 10)
+#clf = DecisionTreeClassifier()
+#kernel = 'rbf', C = 0.001
+#gamma = 0.001)
 
 t0 = time()
 clf.fit(features_train, labels_train)
-print "training time:", round(time()-t0, 3), "s"
-
+#print "training time:", round(time()-t0, 3), "s"
 
 t0 = time()
 pred = clf.predict(features_test)
-print "predict time:", round(time()-t0, 3), "s"
+#print "predict time:", round(time()-t0, 3), "s"
 
-print(accuracy_score(labels_test, pred))
-print clf.best_score_
-print clf.best_params_
+print(labels_test)
+print(pred)
+
+acc = accuracy_score(labels_test, pred)
+prec = precision_score(labels_test, pred)
+rec = recall_score(labels_test, pred)
+
+print('Accuracy: {} - Precision: {} - Recall:{}').format(acc, prec, rec)
+
+#print clf.best_score_
+#print clf.best_params_
 
 
 
