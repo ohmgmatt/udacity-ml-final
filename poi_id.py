@@ -27,7 +27,7 @@ from time import time
 #'loan_advances', 'email_address', 'restricted_stock_deferred',
 #'shared_receipt_with_poi', 'exercised_stock_options', 'from_messages',
 #'other', 'director_fees']
-features_list = ['poi','salary',
+features_list = ['poi',
     'person_to_poi_ratio', 'poi_to_person_ratio',
     'shared_receipt_with_poi']
 
@@ -117,14 +117,6 @@ labels, features = targetFeatureSplit(data)
 features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
 
-
-kf=StratifiedKFold(n_splits = 3, random_state=.42, shuffle = False)
-for train_index, test_index in kf.split(features, labels):
-    features_train= [features[ii] for ii in train_index]
-    features_test= [features[ii] for ii in test_index]
-    labels_train= [labels[ii] for ii in train_index]
-    labels_test= [labels[ii] for ii in test_index]
-
 #parameter = {'min_samples_split':range(2,11)}
 #decisiontree = DecisionTreeClassifier()
 
@@ -145,12 +137,12 @@ for train_index, test_index in kf.split(features, labels):
 
 #clf = GridSearchCV(svector, parameters)
 #clf = svm.SVC(kernel = 'rbf', C = 10)
-clf = DecisionTreeClassifier(min_samples_split = 4)
+clf = DecisionTreeClassifier(min_samples_split = 5)
 #clf = KMeans(n_clusters = 2)
 #kernel = 'rbf', C = 0.001
 #gamma = 0.001)
 
-kf=StratifiedKFold(n_splits = 3, random_state=.42, shuffle = False)
+kf=StratifiedKFold(n_splits = 4, random_state=14841, shuffle = False)
 for train_index, test_index in kf.split(features, labels):
     features_train= [features[ii] for ii in train_index]
     features_test= [features[ii] for ii in test_index]
