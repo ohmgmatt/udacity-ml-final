@@ -4,11 +4,12 @@ import sys
 import pickle
 sys.path.append("tools/")
 import numpy as np
+import matplotlib.pyplot as plt
 
 from feature_format import featureFormat, targetFeatureSplit
-from sklearn.model_selection import GridSearchCV
-from sklearn.cross_validation import train_test_split
+from sklearn.model_selection import GridSearchCV, train_test_split, KFold, cross_val_score, StratifiedKFold
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 from sklearn import svm
 
@@ -26,8 +27,9 @@ from time import time
 #'loan_advances', 'email_address', 'restricted_stock_deferred',
 #'shared_receipt_with_poi', 'exercised_stock_options', 'from_messages',
 #'other', 'director_fees']
-features_list = ['poi','total_stock_value', 'person_to_poi_ratio',
-    'poi_to_person_ratio', 'shared_receipt_with_poi']
+features_list = ['poi','salary',
+    'person_to_poi_ratio', 'poi_to_person_ratio',
+    'shared_receipt_with_poi']
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -50,6 +52,9 @@ for x in range(0, len(data_dict.keys())):
     if data_dict[data_dict.keys()[x]]['total_stock_value'] == 'NaN' or \
     data_dict[data_dict.keys()[x]]['total_stock_value'] < 0:
         data_dict[data_dict.keys()[x]]['total_stock_value'] = 0
+    if data_dict[data_dict.keys()[x]]['salary'] == 'NaN' or \
+    data_dict[data_dict.keys()[x]]['salary'] < 0:
+        data_dict[data_dict.keys()[x]]['salary'] = 0
     if data_dict[data_dict.keys()[x]]['to_messages'] == 'NaN':
         data_dict[data_dict.keys()[x]]['to_messages'] = 0
         data_dict[data_dict.keys()[x]]['from_messages'] = 0
@@ -76,7 +81,20 @@ print(my_dataset[my_dataset.keys()[x]]).keys()
 
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
+
+#for point in data:
+#    from_poi = point[3]
+#    to_poi = point[2]
+#    plt.scatter( from_poi, to_poi, color = 'black' )
+#    if point[0] == 1:
+#        plt.scatter(from_poi, to_poi, color="r", marker="*")
+#plt.xlabel("fraction of emails this person gets from poi")
+#plt.show()
+
+
 labels, features = targetFeatureSplit(data)
+
+
 
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
@@ -95,10 +113,17 @@ labels, features = targetFeatureSplit(data)
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 # Example starting point. Try investigating other evaluation techniques!
-
+#
 features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
 
+
+kf=StratifiedKFold(n_splits = 3, random_state=.42, shuffle = False)
+for train_index, test_index in kf.split(features, labels):
+    features_train= [features[ii] for ii in train_index]
+    features_test= [features[ii] for ii in test_index]
+    labels_train= [labels[ii] for ii in train_index]
+    labels_test= [labels[ii] for ii in test_index]
 
 #parameter = {'min_samples_split':range(2,11)}
 #decisiontree = DecisionTreeClassifier()
@@ -119,27 +144,33 @@ features_train, features_test, labels_train, labels_test = \
 #svector = svm.SVC(kernel = 'rbf')
 
 #clf = GridSearchCV(svector, parameters)
-clf = svm.SVC(kernel = 'rbf', C = 10)
-#clf = DecisionTreeClassifier()
+#clf = svm.SVC(kernel = 'rbf', C = 10)
+clf = DecisionTreeClassifier(min_samples_split = 4)
+#clf = KMeans(n_clusters = 2)
 #kernel = 'rbf', C = 0.001
 #gamma = 0.001)
 
-t0 = time()
-clf.fit(features_train, labels_train)
+kf=StratifiedKFold(n_splits = 3, random_state=.42, shuffle = False)
+for train_index, test_index in kf.split(features, labels):
+    features_train= [features[ii] for ii in train_index]
+    features_test= [features[ii] for ii in test_index]
+    labels_train= [labels[ii] for ii in train_index]
+    labels_test= [labels[ii] for ii in test_index]
+
+    clf.fit(features_train, labels_train)
 #print "training time:", round(time()-t0, 3), "s"
 
-t0 = time()
-pred = clf.predict(features_test)
+    pred = clf.predict(features_test)
 #print "predict time:", round(time()-t0, 3), "s"
 
-print(labels_test)
-print(pred)
 
-acc = accuracy_score(labels_test, pred)
-prec = precision_score(labels_test, pred)
-rec = recall_score(labels_test, pred)
 
-print('Accuracy: {} - Precision: {} - Recall:{}').format(acc, prec, rec)
+    acc = accuracy_score(labels_test, pred)
+    prec = precision_score(labels_test, pred)
+    rec = recall_score(labels_test, pred)
+
+    print('Accuracy: {} -- Precision: {} -- Recall:{}').format(acc, prec, rec)
+print cross_val_score(clf, features, labels, cv=kf, n_jobs=1)
 
 #print clf.best_score_
 #print clf.best_params_
