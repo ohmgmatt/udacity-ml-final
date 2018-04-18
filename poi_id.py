@@ -22,8 +22,8 @@ from time import time
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
 
-features_list = ['poi','person_to_poi_ratio', 'poi_to_person_ratio',
-    'shared_receipt_with_poi']
+features_list = ['poi','person_to_poi_ratio',
+    'shared_receipt_with_poi','salary', 'expenses', 'total_stock_value']
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -31,6 +31,7 @@ with open("final_project_dataset.pkl", "r") as data_file:
 
 ### Task 2: Remove outliers
 data_dict.pop('TOTAL')
+data_dict.pop('THE TRAVEL AGENCY IN THE PARK')
 
 ## Deciding to set any NaN and values under 0 to 0 since they are assumed
 ## to have 0 in total_stock_value and salary
@@ -40,8 +41,8 @@ def NANO(feature):
         data_dict[person][feature] < 0:
             data_dict[person][feature] = 0
 NANO('salary')
+NANO('expenses')
 NANO('total_stock_value')
-
 
 
 for person in data_dict:
@@ -105,6 +106,8 @@ features_train, features_test, labels_train, labels_test = \
 #parameters = {'C':C_Range, 'gamma':Gamma_Range}
 #svector = svm.SVC(kernel = 'rbf')
 
+parameters = {'min_sample_split': range(3, 6)}
+
 #clf = GridSearchCV(svector, parameters)
 #clf = svm.SVC(kernel = 'rbf', C = 10)
 clf = DecisionTreeClassifier(min_samples_split = 5)
@@ -112,27 +115,34 @@ clf = DecisionTreeClassifier(min_samples_split = 5)
 #kernel = 'rbf', C = 0.001
 #gamma = 0.001)
 
-kf=StratifiedKFold(n_splits = 3, random_state=14841, shuffle = False)
-for train_index, test_index in kf.split(features, labels):
-    features_train= [features[x] for x in train_index]
-    features_test= [features[x] for x in test_index]
-    labels_train= [labels[x] for x in train_index]
-    labels_test= [labels[x] for x in test_index]
+#kf=StratifiedKFold(n_splits = 3, random_state=14841, shuffle = False)
+#for train_index, test_index in kf.split(features, labels):
+#    features_train= [features[x] for x in train_index]
+#    features_test= [features[x] for x in test_index]
+#    labels_train= [labels[x] for x in train_index]
+#    labels_test= [labels[x] for x in test_index]
 
-    clf.fit(features_train, labels_train)
+clf.fit(features_train, labels_train)
 #print "training time:", round(time()-t0, 3), "s"
 
-    pred = clf.predict(features_test)
+pred = clf.predict(features_test)
 #print "predict time:", round(time()-t0, 3), "s"
 
 
 
-    acc = accuracy_score(labels_test, pred)
-    prec = precision_score(labels_test, pred)
-    rec = recall_score(labels_test, pred)
+acc = accuracy_score(labels_test, pred)
+prec = precision_score(labels_test, pred)
+rec = recall_score(labels_test, pred)
 
-    print('Accuracy: {} -- Precision: {} -- Recall:{}').format(acc, prec, rec)
-print cross_val_score(clf, features, labels, cv=kf, n_jobs=1)
+print('Accuracy: {} -- Precision: {} -- Recall:{}').format(acc, prec, rec)
+#print cross_val_score(clf, features, labels, cv=kf, n_jobs=1)
+
+importances = clf.feature_importances_
+k = len(features_list)-1
+top_k = importances.argsort()[-k:][::-1]
+print("Features Importance List:")
+for itm in top_k:
+    print("{}: {}").format(features_list[itm+1], importances[itm])
 
 #print clf.best_score_
 #print clf.best_params_
@@ -141,5 +151,4 @@ print cross_val_score(clf, features, labels, cv=kf, n_jobs=1)
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
-
 dump_classifier_and_data(clf, my_dataset, features_list)
