@@ -147,7 +147,7 @@ Data Exploration:
 ```python
 print(len(data_dict.keys()))M
 ```
-  * 146
+  - 146
 * Allocation Across Classes:
 ``` python
 poi_yes = 0
@@ -160,13 +160,13 @@ for x in range(0, len(data_dict)):
 print poi_yes
 print poi_no
 ```
-  * POI: 18
-  * nonPOI: 128
+  - POI: 18
+  - nonPOI: 128
 * Number of Features Used (initial)
 ```python
 len(data_dict[data_dict.keys()[0]].keys())
 ```
-  * 21 Features initially
+  - 21 Features initially
 * Features with missing values
 ```python
 nan_dump = []
@@ -176,7 +176,7 @@ for x in range(0, len(data_dict)):
             nan_dump.append(data_dict[data_dict.keys()[x]].keys()[i])
 print(Counter(nan_dump))
 ```
-  * ```Counter({'loan_advances': 142, 'director_fees': 129, 'restricted_stock_deferred': 128, 'deferral_payments': 107, 'deferred_income': 97, 'long_term_incentive': 80, 'bonus': 64, 'to_messages': 60, 'shared_receipt_with_poi': 60, 'from_poi_to_this_person': 60, 'from_messages': 60, 'from_this_person_to_poi': 60, 'other': 53, 'salary': 51, 'expenses': 51, 'exercised_stock_options': 44, 'restricted_stock': 36, 'email_address': 35, 'total_payments': 21, 'total_stock_value': 20})```
+  - ```Counter({'loan_advances': 142, 'director_fees': 129, 'restricted_stock_deferred': 128, 'deferral_payments': 107, 'deferred_income': 97, 'long_term_incentive': 80, 'bonus': 64, 'to_messages': 60, 'shared_receipt_with_poi': 60, 'from_poi_to_this_person': 60, 'from_messages': 60, 'from_this_person_to_poi': 60, 'other': 53, 'salary': 51, 'expenses': 51, 'exercised_stock_options': 44, 'restricted_stock': 36, 'email_address': 35, 'total_payments': 21, 'total_stock_value': 20})```
 
 
 ```python
@@ -204,3 +204,48 @@ for x in range(0, len(data_dict.keys())):
     data_dict[data_dict.keys()[x]]['total_stock_value'] < 0:
         print data_dict.keys()[x]
 ```
+
+I also noticed that there are a set of 60 missing information and that
+all relates to the persons email habits. I ran a quick check
+```python
+words = ('poi','to_messages',
+'shared_receipt_with_poi',
+'from_poi_to_this_person',
+'from_messages',
+'from_this_person_to_poi')
+
+for x in range(0, len(data_dict)):
+    for feature in words:
+        if data_dict[data_dict.keys()[x]][feature] == 'NaN':
+            data_dict[data_dict.keys()[x]][feature] = 0
+    print(data_dict[data_dict.keys()[x]][words[0]],
+              data_dict[data_dict.keys()[x]][words[1]],
+              data_dict[data_dict.keys()[x]][words[2]],
+              data_dict[data_dict.keys()[x]][words[3]],
+              data_dict[data_dict.keys()[x]][words[4]]
+             )
+```
+
+```python
+TrueNum = 0
+FalseNum = 0
+TrueNaN = 0
+FalseNaN = 0
+for i in data_dict:
+    if data_dict[i]['poi'] == True:
+        if data_dict[i]['to_messages'] == 'NaN':
+            TrueNaN +=1
+        else:
+            TrueNum += 1
+    else:
+        if data_dict[i]['to_messages'] == 'NaN':
+            FalseNaN += 1
+        else:
+            FalseNum += 1
+print(TrueNum, FalseNum, TrueNaN, FalseNaN)
+```
+From this, we get a result of
+* POIs with values : 14
+* POIs with NaNs: 4
+* nonPOIs with values: 72
+* nonPOIs with NaNs: 56
