@@ -2,11 +2,13 @@
 
 import sys
 import pickle
-sys.path.append("tools/")
-import numpy as np
-import matplotlib.pyplot as plt
-
 from feature_format import featureFormat, targetFeatureSplit
+sys.path.append("tools/")
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+
 from sklearn.model_selection import GridSearchCV, train_test_split, KFold, \
                                     cross_val_score, StratifiedKFold
 from sklearn.tree import DecisionTreeClassifier
@@ -19,13 +21,10 @@ from collections import Counter
 from time import time
 
 ### Task 1: Select what features you'll use.
-### features_list is a list of strings, each of which is a feature name.
-### The first feature must be "poi".
-
 features_list = ['poi','person_to_poi_ratio',
     'shared_receipt_with_poi','salary', 'expenses', 'total_stock_value']
 
-### Load the dictionary containing the dataset
+    ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
 
@@ -52,7 +51,6 @@ for person in data_dict:
             data_dict[person][features] = 0
 
 ### Task 3: Create new feature(s)
-###https://stackoverflow.com/questions/1024847/add-new-keys-to-a-dictionary
 for i in data_dict:
     if data_dict[i]['to_messages'] == 0:
         data_dict[i].update({'person_to_poi_ratio': 0})
@@ -71,64 +69,72 @@ data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
 ### Task 4: Try a varity of classifiers
-### Please name your classifier clf for easy export below.
-### Note that if you want to do PCA or other multi-stage operations,
-### you'll need to use Pipelines. For more info:
-### http://scikit-learn.org/stable/modules/pipeline.html
+features_train, features_test, labels_train, labels_test = \
+    train_test_split(features, labels, test_size=0.3, random_state=42)
 
+#clf = GaussianNB()
+#clf = DecisionTreeClassifier()
+#clf = svm.SVC()
+
+#clf.fit(features_train, labels_train)
+#pred = clf.predict(features_test)
+
+#acc = accuracy_score(labels_test, pred)
+#print("The accuracy is: {}").format(acc)
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall
 ### using our testing script. Check the tester.py script in the final project
 ### folder for details on the evaluation method, especially the test_classifier
 ### function. Because of the small size of the dataset, the script uses
-### stratified shuffle split cross validation. For more info:
-### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
+### stratified shuffle split cross validation.
 
-# Example starting point. Try investigating other evaluation techniques!
-features_train, features_test, labels_train, labels_test = \
-    train_test_split(features, labels, test_size=0.3, random_state=42)
-
-#parameter = {'min_samples_split':range(2,11)}
-#decisiontree = DecisionTreeClassifier()
-
-#clf = GridSearchCV(decisiontree, parameter, cv = 2)
-#t0 = time()
-#clf.fit(features_train, labels_train)
-#print "training time:", round(time()-t0, 3), "s"
-#t0 = time()
-#pred = clf.predict(features_test)
-#print "predict time:", round(time()-t0, 3), "s"
-#print clf.best_score_
-#print clf.best_params_
-
+### Grid Search SVC
 #C_Range = np.logspace(-3, 10, 10)
 #Gamma_Range = np.logspace(-3, 10, 10)
 #parameters = {'C':C_Range, 'gamma':Gamma_Range}
 #svector = svm.SVC(kernel = 'rbf')
 
-parameters = {'min_sample_split': range(3, 6)}
+#clf = GridSearchCV(svector, parameters)
+#clf.fit(featuers_train, labels_train)
+#pred = clf.predict(features_test)
+#print clf.best_score_
+#print clf.best_params_
 
+### Grid Search Decision Tree
+#parameter = {'min_samples_split':range(2,11)}
+#decisiontree = DecisionTreeClassifier()
+
+#clf = GridSearchCV(decisiontree, parameter)
+#clf.fit(features_train, labels_train)
+#pred = clf.predict(features_test)
+#print clf.best_score_
+#print clf.best_params_
+
+### Testing different classifiers with different parameters
 #clf = GridSearchCV(svector, parameters)
 #clf = svm.SVC(kernel = 'rbf', C = 10)
 clf = DecisionTreeClassifier(min_samples_split = 5)
 #clf = KMeans(n_clusters = 2)
-#kernel = 'rbf', C = 0.001
-#gamma = 0.001)
 
+### Testing each precision/recall for each fold
 #kf=StratifiedKFold(n_splits = 3, random_state=14841, shuffle = False)
 #for train_index, test_index in kf.split(features, labels):
 #    features_train= [features[x] for x in train_index]
 #    features_test= [features[x] for x in test_index]
 #    labels_train= [labels[x] for x in train_index]
 #    labels_test= [labels[x] for x in test_index]
+#    clf.fit(features_trian, labels_train)
+#    pred = clf.predict(features_test)
+
+#    acc = accuracy_score(labels_test, pred)
+#    prec = precision_score(labels_test, pred)
+#    rec = recall_score(labels_test, pred)
+#    print('Accuracy: {} -- Precision: {} -- Recall:{}').format(acc, prec, rec)
+
 
 clf.fit(features_train, labels_train)
-#print "training time:", round(time()-t0, 3), "s"
 
 pred = clf.predict(features_test)
-#print "predict time:", round(time()-t0, 3), "s"
-
-
 
 acc = accuracy_score(labels_test, pred)
 prec = precision_score(labels_test, pred)
