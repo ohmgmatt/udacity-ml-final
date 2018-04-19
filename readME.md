@@ -6,13 +6,13 @@ in trying to accomplish it. As part of your answer, give some background on the
 dataset and how it can be used to answer the project question. Were there any
 outliers in the data when you got it, and how did you handle those?  [relevant
 rubric items: “data exploration”, “outlier investigation”]
-    - The goal of this project is to discover who were the persons of Interest
+  - The goal of this project is to discover who were the persons of Interest
 in the Enron dataset. Machine learning is useful in this instance because we
 are able to create a model that can iterate over many variables to most
 accurately label someone as a Person of Interest(POI) or not. The dataset
 contains 146 points, 18 of which are POIs while 128 are non-POIs. For each
 datapoint, there exists 21 features (initially).
-    - However, not all are good values, meaning that some 'features' actually
+  - However, not all are good values, meaning that some 'features' actually
 have no value or 'NaN' values.These will mess up with our model. To address
 this issue, we want to tackle outliers. The first obvious outlier was the
 'Total' column which summed all the salaries and other financial information
@@ -41,7 +41,7 @@ automated feature selection function like SelectKBest, please report the
 feature scores and reasons for your choice of parameter values.  [relevant
 rubric items: “create new features”, “intelligently select features”, “properly
 scale features”]
-    - In the end of the process, I used 5 features, 1 of which was newly
+  - In the end of the process, I used 5 features, 1 of which was newly
 created. Since I was using a decision tree to classify, I did not need to
 feature scale since they are not affected by scales. I chose my features based
 on how many missing values they had. I started off with only 'total_stock_value'
@@ -53,7 +53,7 @@ decided to work around them and create a ratio of their sent/received messages
 to/from POIs instead of taking a flat number. People could have sent a small
 amount but only been talking to POIs or sent a large number but also have a
 large amount of communications with other people.
-    - With just the 'total_stock_value', 'shared_receipt_with_poi', and my two
+  - With just the 'total_stock_value', 'shared_receipt_with_poi', and my two
 ratios, I was not getting the precision and recall in tester.py so I wanted to
 select more features. I again looked for a group of features that could work
 well together. Similar to the email messages, 'salary' and 'expenses' both had
@@ -76,7 +76,7 @@ accuracy, I think it is pretty good for the amount of training data we had.
 3. What algorithm did you end up using? What other one(s) did you try? How did
 model performance differ between algorithms?  [relevant rubric item: “pick an
 algorithm”]
-   - I ended up using the DecisionTreeClassifier to create a model. I started
+  - I ended up using the DecisionTreeClassifier to create a model. I started
 off with using GaussianNB and compared it with the DecisionTreeClassifier,
 SVC, and KMeans. Initially, I ended up choosing the SVC since it had several
 parameters I could tune and also had a high initial accuracy. However, I came
@@ -96,7 +96,7 @@ and briefly explain how you would have done it for the model that was not your
 final choice or a different model that does utilize parameter tuning, e.g. a
 decision tree classifier).  [relevant rubric items: “discuss parameter tuning”,
 “tune the algorithm”]
-   - Tuning parameters are an important part of machine learning as these, along
+  - Tuning parameters are an important part of machine learning as these, along
 with proper features, are keys to improving the algorithm. Tuning parameters
 alters the ways, for example, a classifier classifies each point. Tuning changes
 the thresholds for the model. If you did not tune and just stuck with the base
