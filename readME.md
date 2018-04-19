@@ -89,7 +89,7 @@ feature scaling to the SVC to see if I could have improved it but the
 DecisionTreeClassifier got me what I needed.
 
 4. What does it mean to tune the parameters of an algorithm, and what can happen
-if you don’t do this well?  How did you tune the parameters of your particular 
+if you don’t do this well?  How did you tune the parameters of your particular
 algorithm? What parameters did you tune? (Some algorithms do not have parameters
 that you need to tune -- if this is the case for the one you picked, identify
 and briefly explain how you would have done it for the model that was not your
@@ -101,8 +101,44 @@ with proper features, are keys to improving the algorithm. Tuning parameters
 alters the ways, for example, a classifier classifies each point. Tuning changes
 the thresholds for the model. If you did not tune and just stuck with the base
 algorithm, while you could get a decent score, it would not be the most
-optimzied solution.
+optimized solution. There could also be a better turned algorithm than the one
+you selected. For example, Algorithm A without tuning is better than Algorithm B
+without tuning. However, Algorithm B with tuning could be better than Algorithm
+A with turning.
   - For the DecisionTreeClassifier, I stuck with tuning their minimum samples
 split. I stuck with the gini criterion since we want to minimize
 misclassifications. We did not want to limit max_depth since we want all
-all our leaves to be pure, especially with a small dataset.
+all our leaves to be pure, especially with a small dataset. I also did not want
+to assign weights to the features since I was not sure which weighed more than
+the others. I also left random_state untouched since I felt that it would
+cause a bias if the starting split was the same. I would be tuning it for
+the training data, not for an overall or any data.
+
+5. What is validation, and what’s a classic mistake you can make if you do it
+wrong? How did you validate your analysis?  [relevant rubric items: “discuss
+validation”, “validation strategy”]
+  - Validation is when you assess whether your model was accurate or validate
+that it is producing the correct results. A simple validation we use with
+algorithms is splitting our sample data into training and testing data. We
+training on the training and run preliminary tests on the testing to see if
+our algorithms are under/over fitting and whether our parameters are tuned
+appropriately. A classic mistake is overfitting is when your model is fit
+perfectly to the training data, but when it comes to testing, it performs
+absolutely poorly. This is because it is not generalized for datasets that
+are different from the training set.
+  - The validation I used was a StratifiedKFold cross validation using a split
+set of 3. I iterated the algorithm over the 3 folds and get the precision
+and recall of all three, then did a quick average.
+
+6. Give at least 2 evaluation metrics and your average performance for each of
+them.  Explain an interpretation of your metrics that says something
+human-understandable about your algorithm’s performance. [relevant rubric item:
+“usage of evaluation metrics”]
+  - The metrics used to evaluate the final model were Precision and Recall. The
+precision of an algorithm is the amount of the correct positives it predicted
+over the amount of all positives it predicted. The recall of an algorithm
+is the amount of correct positives it predicted over the amount of actual
+positives in the set. The algorithm gets a precision around .40 and a recall
+around .35. A 40% precision means that when the algorithm predicts someone to
+be a POI, they are correct 40% of the time. A 35% recall means that they only
+capture 35% of the POIs overall.
